@@ -1,6 +1,6 @@
 import time
 import cv2
-import argpars
+import argparse
 import supervision as sv
 import numpy as np
 from ultralytics import YOLO
