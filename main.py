@@ -75,6 +75,9 @@ def main():
             break
 
         if (cv2.waitKey(30) == 27):
+            cap.release()
+            cv2.destroyAllWindows()
+            awssp.images_sending_to_aws()
             break
 
 if __name__ == "__main__":
