@@ -4,7 +4,7 @@ import argparse
 import supervision as sv
 import numpy as np
 from ultralytics import YOLO
-import aws_send_photos as awssp
+import src.aws_send_photos as awssp
 
 FPS = 20
 frame_size = (360, 360)
