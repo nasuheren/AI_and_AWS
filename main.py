@@ -4,7 +4,8 @@ import argparse
 import supervision as sv
 import numpy as np
 from ultralytics import YOLO
-import src.aws_send_photos as awssp
+from ultralytics.yolo.engine import results
+# import aws_send_photos as awssp
 
 FPS = 20
 frame_size = (360, 360)
@@ -15,9 +16,9 @@ video_name = "./videolar/video.mp4"
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Person Detection")
     parser.add_argument(
-        "--webcam-resolution", 
-        default=[360, 360], 
-        nargs=2, 
+        "--webcam-resolution",
+        default=[360, 360],
+        nargs=2,
         type=int
     )
     args = parser.parse_args()
@@ -46,7 +47,24 @@ def main():
 
         ret, frame = cap.read()
 
-        result = model(frame, agnostic_nms=True)[0]
+        result = model(frame)[0]
+
+        if result:
+            boxes = result[0].boxes.xyxy.tolist()
+            for box in boxes:
+                xyxy = box
+                x1 = int(xyxy[0])
+                y1 = int(xyxy[1])
+                x2 = int(xyxy[2])
+                y2 = int(xyxy[3])
+
+                cropped_image = frame[y1:y1+y2, x1:x1+x2]
+
+                cv2.imwrite("human_img/frame{}.jpg".format(frame_count), cropped_image)
+        
+        else:
+            print("Liste bos")
+
         detections = sv.Detections.from_yolov8(result)
         labels = [
             f"{model.model.names[class_id]} {confidence:0.2f}"
@@ -54,10 +72,10 @@ def main():
             in detections
         ]
         frame = box_annotator.annotate(
-            scene=frame, 
-            detections=detections, 
+            scene=frame,
+            detections=detections,
             labels=labels
-        )   
+        )
 
         # kameradan alınan her bir frame resimler klasörüne tek tek kayıt yapılır.
         if ret:
@@ -68,16 +86,16 @@ def main():
 
         time_finish = time.time()
 
-        if time_finish - time_start >= 10:
+        if time_finish - time_start >= 5:
             cap.release()
             cv2.destroyAllWindows()
-            awssp.images_sending_to_aws()
+            # awssp.images_sending_to_aws()
             break
 
         if (cv2.waitKey(30) == 27):
             cap.release()
             cv2.destroyAllWindows()
-            awssp.images_sending_to_aws()
+            # awssp.images_sending_to_aws()
             break
 
 if __name__ == "__main__":
