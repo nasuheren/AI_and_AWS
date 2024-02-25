@@ -48,24 +48,10 @@ def main():
 
         result = model(frame)[0]
 
-# for i in range(detection_count):
-#             cls = int(result.boxes.cls[i].item())
-#             name = result.names[cls]
-#             confidence = float(result.boxes.conf[i].item())
-#             bounding_box = result.boxes.xyxy[i].cpu().numpy()
-
-
-
-
-        detection_count = result.boxes.shape[0]
-        for i in range(detection_count):
-            cls = int(result.boxes.cls[i].item())
-            # print(cls)
-        
-
-        if result:
-            
-            boxes = result[0].boxes.xyxy.tolist()
+        # tespit edilen nesnelerden istenilen nesnenin kırpılmasını sağlar
+        if 67 in result.boxes.cls.tolist():
+            indeks = (result.boxes.cls.tolist()).index(67)
+            boxes = result[indeks].boxes.xyxy.tolist()
             for box in boxes:
                 xyxy = box
                 x1 = int(xyxy[0])
@@ -75,33 +61,7 @@ def main():
 
                 cropped_image = frame[y1:y1+y2, x1:x1+x2]
 
-                cv2.imwrite("human_img/frame{}.jpg".format(frame_count), cropped_image)
-        
-        else:
-            print("Liste bos")
-
-        # print(model.model.names)
-
-        try:
-            if model.model.names[67] == "cell phone":
-                cell_phone_boxes = result[0].boxes.xyxy.tolist()
-                print("cell", cell_phone_boxes)
-                for box in cell_phone_boxes:
-                    xyxy = box
-                    x1 = int(xyxy[0])
-                    y1 = int(xyxy[1])
-                    x2 = int(xyxy[2])
-                    y2 = int(xyxy[3])
-
-                    cropped_image = frame[y1:y1+y2, x1:x1+x2]
-
-                    cv2.imwrite("error_images/frame{}.jpg".format(frame_count), cropped_image)
-                print("bla1")
-                # cv2.imwrite("error_images/error_frame{}.jpg".format(frame_count), )
-                print("blaa")
-            else:print("esitligi dogru gir cano")
-        except Exception as e:
-            print(e)
+                cv2.imwrite("error_images/frame{}.jpg".format(frame_count), cropped_image)
 
         detections = sv.Detections.from_yolov8(result)
         labels = [
@@ -115,7 +75,7 @@ def main():
             labels=labels
         )
 
-        # kameradan alınan her bir frame resimler klasörüne tek tek kayıt yapılır.
+        # kameradan alınan her bir frame resimler klasörüne tek tek kayıt yapılır
         if ret:
             cv2.imwrite("resimler/frame{}.jpg".format(frame_count), frame)
             frame_count += 1
