@@ -9,7 +9,7 @@ def images_sending_to_aws():
     region_name = 'us-east-1'
     bucket_name = "nash-final-project"
     # Resimlerin olduğu klasör yolu
-    folder_path = "C:\\Users\\nasuh\\Masaüstü\\Python-Projeler\\Human-Detection\\human_img"
+    folder_path = "C:\\Users\\nasuh\\Masaüstü\\AI_and_AWS\\error_images"
 
     # AWS hizmetine bağlanma
     client = boto3.client('s3', 
@@ -17,7 +17,7 @@ def images_sending_to_aws():
                           aws_secret_access_key=aws_secret_access_key,
                           region_name=region_name)
 
-    folder_path = "C:\\Users\\nasuh\\Masaüstü\\Python-Projeler\\Human-Detection\\human_img"
+    folder_path = "C:\\Users\\nasuh\\Masaüstü\\AI_and_AWS\\error_images"
     # Klasördeki tüm .jpg dosyalarını seçer
     jpg_files = glob.glob(os.path.join(folder_path, "*.jpg"))
 
@@ -28,6 +28,6 @@ def images_sending_to_aws():
         image_files = image_files[7]
         print(image_files)
         # Dosya yolu belirtilen resmi AWS'de ki bucket'a yollar
-        with open("./human_img/" + image_files, "rb") as f:
+        with open("./error_images/" + image_files, "rb") as f:
             print(f.name)
             client.upload_fileobj(f, bucket_name, image_files)
