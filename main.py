@@ -10,10 +10,9 @@ FPS = 20
 frame_size = (360, 360)
 
 image_folder = "./resimler/"
-video_name = "./videolar/video.mp4"
 
 def parse_arguments() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Person Detection")
+    parser = argparse.ArgumentParser(description="Person and Detection")
     parser.add_argument(
         "--webcam-resolution",
         default=[360, 360],
@@ -31,7 +30,7 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
 
-    model = YOLO("yolov8n.pt")
+    model = YOLO("yolov8n.pt") # sadece insan tespiti icin best.pt yazmak yeterli
 
     box_annotator = sv.BoxAnnotator(
         thickness=2,
